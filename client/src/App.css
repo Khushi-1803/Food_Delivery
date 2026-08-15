@@ -1,0 +1,74 @@
+@import "tailwindcss";
+
+/* ===========================
+   Rotating Snack Loop
+=========================== */
+
+.rotating-circle {
+  animation: rotateLoop 18s linear infinite;
+  transform-origin: center center;
+}
+
+@keyframes rotateLoop {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ===========================
+   Text Color Animation
+=========================== */
+
+.fade-title {
+  animation: colorShift 3s ease-in-out infinite;
+}
+
+.fade-text {
+  animation: textGlow 4s ease-in-out infinite;
+}
+
+@keyframes colorShift {
+  0% {
+    color: #f97316; /* Orange-500 */
+  }
+  25% {
+    color: #fb923c; /* Orange-400 */
+  }
+  50% {
+    color: #FFFFFF; /* white-400 */
+  }
+  75% {
+    color: #fb923c;
+  }
+  100% {
+    color: #f97316;
+  }
+}
+
+@keyframes textGlow {
+  0% {
+    color: #fdba74;
+  }
+  50% {
+    color: #ffffff;
+  }
+  100% {
+    color: #fdba74;
+  }
+}
+
+/* ===========================
+   Button Hover Animation
+=========================== */
+
+.fade-btn {
+  transition: all 0.4s ease;
+}
+
+.fade-btn:hover {
+  transform: translateY(-4px) scale(1.08);
+  box-shadow: 0 12px 30px rgba(249, 115, 22, 0.45);
+}
