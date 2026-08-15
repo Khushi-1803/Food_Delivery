@@ -1,10 +1,18 @@
-
 import React from "react";
 import { Heart, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useAppContext } from "../context/AppContext.jsx";
 
 const ProductCard2 = ({ product }) => {
   const navigate = useNavigate();
+
+  const {
+    toggleFavourite,
+    isFavourite,
+    addToCart,
+  } = useAppContext();
+
+  const favourite = isFavourite(product.id);
 
   const handleProductClick = () => {
     navigate(
@@ -12,6 +20,16 @@ const ProductCard2 = ({ product }) => {
     );
 
     window.scrollTo(0, 0);
+  };
+
+  const handleFavourite = (e) => {
+    e.stopPropagation();
+    toggleFavourite(product);
+  };
+
+  const handleAddToCart = (e) => {
+    e.stopPropagation();
+    addToCart(product);
   };
 
   return (
@@ -29,10 +47,18 @@ const ProductCard2 = ({ product }) => {
 
         {/* Favourite */}
         <button
-          onClick={(e) => e.stopPropagation()}
-          className="absolute top-4 right-4 bg-white/90 p-2 rounded-full shadow-lg hover:bg-red-500 hover:text-white transition"
+          type="button"
+          onClick={handleFavourite}
+          className={`absolute top-4 right-4 p-2 rounded-full shadow-lg transition ${
+            favourite
+              ? "bg-red-500 text-white"
+              : "bg-white/90 text-black hover:bg-red-500 hover:text-white"
+          }`}
         >
-          <Heart size={18} />
+          <Heart
+            size={18}
+            fill={favourite ? "currentColor" : "none"}
+          />
         </button>
 
         {/* Category */}
@@ -63,7 +89,8 @@ const ProductCard2 = ({ product }) => {
           </span>
 
           <button
-            onClick={(e) => e.stopPropagation()}
+            type="button"
+            onClick={handleAddToCart}
             className="bg-orange-300 hover:bg-black text-white p-3 rounded-full shadow-lg hover:scale-110 transition"
           >
             <Plus size={18} />

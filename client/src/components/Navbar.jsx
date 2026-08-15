@@ -8,9 +8,10 @@ const Navbar = () => {
    const navigate = useNavigate();
 
   const {
-    cartCount,
-    setShowUserLogin,
-  } = useAppContext();
+  cartCount,
+  favouriteCount,
+  setShowUserLogin,
+} = useAppContext();
 
   return (
     <nav className="bg-black shadow-md">
@@ -69,11 +70,39 @@ const Navbar = () => {
         <div className="flex items-center gap-4">
 
           {/* Favourite */}
-          <img
-            className="w-6 h-6 cursor-pointer"
-            src={assets.favourite}
-            alt="Favourite"
-          />
+          {/* Favourite */}
+<NavLink
+  to="/favourites"
+  className="relative cursor-pointer block"
+>
+  <img
+    className="w-6 h-6"
+    src={assets.favourite}
+    alt="Favourite"
+  />
+
+  {favouriteCount > 0 && (
+    <span
+      className="
+        absolute
+        -top-3
+        -right-3
+        bg-red-500
+        text-white
+        text-xs
+        font-bold
+        w-5
+        h-5
+        rounded-full
+        flex
+        items-center
+        justify-center
+      "
+    >
+      {favouriteCount}
+    </span>
+  )}
+</NavLink>
 
           {/* Cart */}
           <NavLink
