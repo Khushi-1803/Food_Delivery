@@ -34,14 +34,14 @@ const Login = () => {
       );
 
       if (data.success) {
+  localStorage.setItem("token", data.token);
 
-        setUser(data.user);
+  setUser(data.user);
 
-        setShowUserLogin(false);
+  setShowUserLogin(false);
 
-        navigate("/");
-
-      } else {
+  navigate("/");
+} else {
 
         toast.error(data.message);
 

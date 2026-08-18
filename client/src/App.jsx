@@ -15,6 +15,7 @@ import Contactus from "./pages/Contactus";
 import ProductData from "./pages/ProductDetails";
 import FoodListing from "./pages/FoodListing";
 import Favourite from "./pages/Favourite";
+import Profile from "./pages/Profile";
 
 import {
   BrowserRouter,
@@ -66,6 +67,8 @@ function AppContent() {
         />
         <Route path="/cart" element={<Cart />} />
         <Route path="/favourites" element={<Favourite />} />
+        <Route path="/profile" element={<Profile />}
+/>
 
       </Routes>
 
