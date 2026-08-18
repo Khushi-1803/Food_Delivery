@@ -1,31 +1,47 @@
-import Product from  "../modelss/products.model.js"
+import Product from "../models/Product.js";
 
-// Get all products
 
-const getProducts = async(req, res) => {
-    try {
-        const products = await Product.find({
-            isavailable:true
-        }).sort({ createdAt: -1 });
-         res.json({
+// ================= GET ALL PRODUCTS =================
+
+const getProducts = async (
+  req,
+  res
+) => {
+  try {
+    const products =
+      await Product.find({
+        isAvailable: true,
+      }).sort({
+        createdAt: -1,
+      });
+
+    return res.json({
       success: true,
       products,
     });
-    } catch (error) {
-        res.status(500).json({
+  } catch (error) {
+    return res.status(500).json({
       success: false,
       message: error.message,
     });
   }
-}
+};
 
-// Get single product
 
-const getProduct = async(req, res) => {
-    try {
-        const product = await Product.find({
-            productID:Number(req.params.id)
-        })
+// ================= GET SINGLE PRODUCT =================
+
+const getProduct = async (
+  req,
+  res
+) => {
+  try {
+    const product =
+      await Product.findOne({
+        productId: Number(
+          req.params.id
+        ),
+        isAvailable: true,
+      });
 
     if (!product) {
       return res.status(404).json({
@@ -33,49 +49,52 @@ const getProduct = async(req, res) => {
         message: "Product not found",
       });
     }
-    res.status(200).json({
-        success:true,
-        product
-    })
-    } catch (error) {
-        res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
-}
 
-// Get category products
-
-// Get category products
-
-const getProductsByCategory = async (req, res) => {
-  try {
-    const products = await Product.find({
-      category: {
-        $regex: new RegExp(
-          `^${req.params.category}$`,
-          "i"
-        ),
-      },
-
-      isAvailable: true,
-    });
-
-    res.json({
+    return res.status(200).json({
       success: true,
-      products,
+      product,
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: error.message,
     });
   }
 };
 
-module.exports = {
+
+// ================= CATEGORY =================
+
+const getProductsByCategory =
+  async (req, res) => {
+    try {
+      const products =
+        await Product.find({
+          category: {
+            $regex: new RegExp(
+              `^${req.params.category}$`,
+              "i"
+            ),
+          },
+
+          isAvailable: true,
+        });
+
+      return res.json({
+        success: true,
+        products,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  };
+
+
+export {
   getProducts,
   getProduct,
-  getProductsByCategory
+  getProductsByCategory,
 };

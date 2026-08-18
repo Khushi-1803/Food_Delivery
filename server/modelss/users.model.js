@@ -1,8 +1,7 @@
-import mongoose from mongoose;
+import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema(
-
-    {
+  {
     name: {
       type: String,
       required: true,
@@ -28,12 +27,16 @@ const userSchema = new mongoose.Schema(
       default: "",
       trim: true,
     },
+
+    profilePicture: {
+      type: String,
+      default: "",
+    },
   },
   {
     timestamps: true,
   }
-
-)
+);
 
 const User = mongoose.model("User", userSchema);
 

@@ -1,27 +1,28 @@
-const Order = require("../models/Order");
-const Product = require("../models/Product");
-const User = require("../models/User");
+import Order from "../models/Order.js";
+import Product from "../models/Product.js";
 
 
 // ================= CREATE ORDER =================
 
-const createOrder = async (req, res) => {
+const createOrder = async (
+  req,
+  res
+) => {
   try {
-    const { items, deliveryAddress, paymentMethod } = req.body;
+    const {
+      items,
+      deliveryAddress,
+      paymentMethod,
+    } = req.body;
 
-    if (!items || items.length === 0) {
+    if (
+      !items ||
+      !Array.isArray(items) ||
+      items.length === 0
+    ) {
       return res.status(400).json({
         success: false,
         message: "Cart is empty",
-      });
-    }
-
-    const user = await User.findById(req.user.id);
-
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
       });
     }
 
@@ -30,23 +31,42 @@ const createOrder = async (req, res) => {
     let totalAmount = 0;
 
     for (const item of items) {
-      const product = await Product.findOne({
-        productId: item.productId,
-      });
+      const product =
+        await Product.findOne({
+          productId: Number(
+            item.productId
+          ),
+          isAvailable: true,
+        });
 
       if (!product) {
         return res.status(404).json({
           success: false,
-          message: `Product ${item.productId} not found`,
+          message:
+            `Product ${item.productId} not found`,
         });
       }
 
-      const quantity = Number(item.quantity);
+      const quantity =
+        Number(item.quantity);
 
-      if (!quantity || quantity < 1) {
+      if (
+        !Number.isInteger(quantity) ||
+        quantity < 1
+      ) {
         return res.status(400).json({
           success: false,
           message: "Invalid quantity",
+        });
+      }
+
+      if (
+        quantity > product.stock
+      ) {
+        return res.status(400).json({
+          success: false,
+          message:
+            `${product.name} does not have enough stock`,
         });
       }
 
@@ -58,32 +78,45 @@ const createOrder = async (req, res) => {
         quantity,
       });
 
-      totalAmount += product.price * quantity;
+      totalAmount +=
+        product.price * quantity;
     }
 
-    const order = await Order.create({
-      userId: user._id,
+    if (!deliveryAddress) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Delivery address is required",
+      });
+    }
 
-      items: orderItems,
+    const order =
+      await Order.create({
+        userId: req.user.id,
 
-      totalAmount,
+        items: orderItems,
 
-      deliveryAddress:
-        deliveryAddress || user.address,
+        totalAmount,
 
-      paymentMethod:
-        paymentMethod || "COD",
-    });
+        deliveryAddress,
 
-    res.status(201).json({
+        paymentMethod:
+          paymentMethod || "COD",
+      });
+
+    return res.status(201).json({
       success: true,
-      message: "Order placed successfully",
+      message:
+        "Order placed successfully",
       order,
     });
   } catch (error) {
-    console.error(error);
+    console.error(
+      "Create order error:",
+      error
+    );
 
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: error.message,
     });
@@ -91,24 +124,30 @@ const createOrder = async (req, res) => {
 };
 
 
-// ================= GET MY ORDERS =================
+// ================= MY ORDERS =================
 
-const getMyOrders = async (req, res) => {
+const getMyOrders = async (
+  req,
+  res
+) => {
   try {
-    const orders = await Order.find({
-      userId: req.user.id,
-    })
-      .populate("items.productId")
-      .sort({
-        createdAt: -1,
-      });
+    const orders =
+      await Order.find({
+        userId: req.user.id,
+      })
+        .populate(
+          "items.productId"
+        )
+        .sort({
+          createdAt: -1,
+        });
 
-    res.json({
+    return res.json({
       success: true,
       orders,
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: error.message,
     });
@@ -116,14 +155,20 @@ const getMyOrders = async (req, res) => {
 };
 
 
-// ================= GET SINGLE ORDER =================
+// ================= SINGLE ORDER =================
 
-const getOrder = async (req, res) => {
+const getOrder = async (
+  req,
+  res
+) => {
   try {
-    const order = await Order.findOne({
-      _id: req.params.id,
-      userId: req.user.id,
-    }).populate("items.productId");
+    const order =
+      await Order.findOne({
+        _id: req.params.id,
+        userId: req.user.id,
+      }).populate(
+        "items.productId"
+      );
 
     if (!order) {
       return res.status(404).json({
@@ -132,12 +177,12 @@ const getOrder = async (req, res) => {
       });
     }
 
-    res.json({
+    return res.json({
       success: true,
       order,
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: error.message,
     });
@@ -145,7 +190,7 @@ const getOrder = async (req, res) => {
 };
 
 
-module.exports = {
+export {
   createOrder,
   getMyOrders,
   getOrder,

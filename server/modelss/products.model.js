@@ -1,7 +1,13 @@
-import mongoose from mongoose;
+import mongoose from "mongoose";
 
-const productSchema  = new mongoose.Schema(
-    {
+const productSchema = new mongoose.Schema(
+  {
+    productId: {
+      type: Number,
+      required: true,
+      unique: true,
+    },
+
     name: {
       type: String,
       required: true,
@@ -30,8 +36,8 @@ const productSchema  = new mongoose.Schema(
       default: 0,
     },
 
-     rating: {
-     type: Number,
+    rating: {
+      type: Number,
       default: 0,
       min: 0,
       max: 5,
@@ -71,4 +77,8 @@ const productSchema  = new mongoose.Schema(
   {
     timestamps: true,
   }
-)
+);
+
+const Product = mongoose.model("Product", productSchema);
+
+export default Product;

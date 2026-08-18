@@ -2,23 +2,23 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 
-import connectDB from "../config/db.js";
+import connectDB from "./config/db.js";
 
-import userRoutes from "../routes/userRoutes.js";
-import productRoutes from "../routes/productRoutes.js";
-import orderRoutes from "../routes/orderRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
+import productRoutes from "./routes/productRoutes.js";
+import orderRoutes from "./routes/orderRoutes.js";
 
 dotenv.config();
 
 const app = express();
 
 
-// Database
+// ================= DATABASE =================
 
 connectDB();
 
 
-// Middleware
+// ================= MIDDLEWARE =================
 
 app.use(
   cors({
@@ -30,7 +30,7 @@ app.use(
 app.use(express.json());
 
 
-// Test route
+// ================= TEST =================
 
 app.get("/", (req, res) => {
   res.json({
@@ -40,31 +40,49 @@ app.get("/", (req, res) => {
 });
 
 
-// API routes
+// ================= API =================
 
-app.use("/api/user", userRoutes);
+app.use(
+  "/api/user",
+  userRoutes
+);
 
-app.use("/api/products", productRoutes);
+app.use(
+  "/api/products",
+  productRoutes
+);
 
-app.use("/api/orders", orderRoutes);
-
-
-// Error handler
-
-app.use((error, req, res, next) => {
-  console.error(error);
-
-  res.status(500).json({
-    success: false,
-    message: "Internal server error",
-  });
-});
+app.use(
+  "/api/orders",
+  orderRoutes
+);
 
 
-const PORT = process.env.PORT || 5000;
+// ================= ERROR HANDLER =================
 
-app.listen(PORT, () => {
-  console.log(
-    `Server running on http://localhost:${PORT}`
-  );
-});
+app.use(
+  (error, req, res, next) => {
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      message:
+        "Internal server error",
+    });
+  }
+);
+
+
+// ================= SERVER =================
+
+const PORT =
+  process.env.PORT || 5000;
+
+app.listen(
+  PORT,
+  () => {
+    console.log(
+      `Server running on http://localhost:${PORT}`
+    );
+  }
+);

@@ -1,12 +1,12 @@
-const express = require("express");
+import express from "express";
 
-const {
+import {
   createOrder,
   getMyOrders,
   getOrder,
-} = require("../controllers/orderController");
+} from "../controllers/orderController.js";
 
-const authMiddleware = require("../middleware/authMiddleware");
+import authMiddleware from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
@@ -28,4 +28,4 @@ router.get(
   getOrder
 );
 
-module.exports = router;
+export default router;

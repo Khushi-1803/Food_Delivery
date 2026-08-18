@@ -1,21 +1,32 @@
-import express from express;
-import {
-    registerUser,
-    userLogin,
-    getProfile,
-    updateAddress,
-    getUserOrders,
-} from "../controller/UserController.js"
+import express from "express";
 
-import authMiddleware from "./middleware/middleware.js"
+import {
+  registerUser,
+  userLogin,
+  getProfile,
+  updateAddress,
+  getUserOrders,
+} from "../controllers/userController.js";
+
+import authMiddleware from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.post("/register", registerUser);
+router.post(
+  "/register",
+  registerUser
+);
 
-router.post("/login", loginUser);
+router.post(
+  "/login",
+  userLogin
+);
 
-router.get("/profile", authMiddleware, getProfile);
+router.get(
+  "/profile",
+  authMiddleware,
+  getProfile
+);
 
 router.put(
   "/address",
@@ -29,4 +40,4 @@ router.get(
   getUserOrders
 );
 
-module.exports = router;
+export default router;

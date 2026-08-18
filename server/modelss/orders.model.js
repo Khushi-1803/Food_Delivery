@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const orderItemSchema = new mongoose.Schema(
   {
-    product: {
+    productId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Product",
       required: true,
@@ -15,6 +15,7 @@ const orderItemSchema = new mongoose.Schema(
 
     image: {
       type: String,
+      default: "",
     },
 
     price: {
@@ -35,15 +36,18 @@ const orderItemSchema = new mongoose.Schema(
 
 const orderSchema = new mongoose.Schema(
   {
-    user: {
+    userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
 
-    items: [orderItemSchema],
+    items: {
+      type: [orderItemSchema],
+      required: true,
+    },
 
-    shippingAddress: {
+    deliveryAddress: {
       type: String,
       required: true,
     },
@@ -51,6 +55,7 @@ const orderSchema = new mongoose.Schema(
     totalAmount: {
       type: Number,
       required: true,
+      min: 0,
     },
 
     paymentMethod: {
