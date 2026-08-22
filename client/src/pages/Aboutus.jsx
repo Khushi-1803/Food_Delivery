@@ -50,9 +50,9 @@ const Aboutus = () => {
         className="max-w-7xl mx-auto px-6 py-20 grid md:grid-cols-2 gap-12 items-center"
       >
         <img
-          src={assets.about2img}
-          alt="Restaurant"
-          className="w-2/3 h-2/3 object-cover rounded-2xl shadow-2xl"
+        src={assets.about2img}
+        alt="Restaurant"
+        className="w-full max-w-[500px] aspect-square object-cover rounded-full shadow-2xl"
         />
 
         <div>

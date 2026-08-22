@@ -12,13 +12,7 @@ dotenv.config();
 
 const app = express();
 
-
-// ================= DATABASE =================
-
 connectDB();
-
-
-// ================= MIDDLEWARE =================
 
 app.use(
   cors({
@@ -29,9 +23,6 @@ app.use(
 
 app.use(express.json());
 
-
-// ================= TEST =================
-
 app.get("/", (req, res) => {
   res.json({
     success: true,
@@ -39,50 +30,21 @@ app.get("/", (req, res) => {
   });
 });
 
+app.use("/api/user", userRoutes);
+app.use("/api/products", productRoutes);
+app.use("/api/orders", orderRoutes);
 
-// ================= API =================
+app.use((error, req, res, next) => {
+  console.error(error);
 
-app.use(
-  "/api/user",
-  userRoutes
-);
+  res.status(500).json({
+    success: false,
+    message: "Internal server error",
+  });
+});
 
-app.use(
-  "/api/products",
-  productRoutes
-);
+const PORT = process.env.PORT || 5000;
 
-app.use(
-  "/api/orders",
-  orderRoutes
-);
-
-
-// ================= ERROR HANDLER =================
-
-app.use(
-  (error, req, res, next) => {
-    console.error(error);
-
-    res.status(500).json({
-      success: false,
-      message:
-        "Internal server error",
-    });
-  }
-);
-
-
-// ================= SERVER =================
-
-const PORT =
-  process.env.PORT || 5000;
-
-app.listen(
-  PORT,
-  () => {
-    console.log(
-      `Server running on http://localhost:${PORT}`
-    );
-  }
-);
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
+});

@@ -1,109 +1,417 @@
-import React, { createContext, useContext, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+} from "react";
 
-const AppContext = createContext();
+
+// =====================================================
+// APP CONTEXT
+// =====================================================
+
+const AppContext = createContext(null);
+
+
+// =====================================================
+// APP PROVIDER
+// =====================================================
 
 export const AppProvider = ({ children }) => {
-  // Cart
+
+  // ===================================================
+  // CART
+  // ===================================================
+
   const [cartItems, setCartItems] = useState([]);
 
-  // Favourites
+
+  // ===================================================
+  // FAVOURITES
+  // ===================================================
+
   const [favourites, setFavourites] = useState([]);
 
-  // Login popup
-  const [showUserLogin, setShowUserLogin] = useState(false);
 
-  // Logged-in user
+  // ===================================================
+  // LOGIN POPUP
+  // ===================================================
+
+  const [showUserLogin, setShowUserLogin] =
+    useState(false);
+
+
+  // ===================================================
+  // USER
+  // ===================================================
+
   const [user, setUser] = useState(null);
 
-  // Add product to cart
+
+  // ===================================================
+  // ADD TO CART
+  // ===================================================
+
   const addToCart = (product) => {
-    setCartItems((prevCart) => {
-      const existingProduct = prevCart.find(
-        (item) => item.id === product.id
-      );
+
+    setCartItems((previousItems) => {
+
+      // -----------------------------------------------
+      // Check if product already exists
+      // -----------------------------------------------
+
+      const existingProduct =
+        previousItems.find(
+          (item) =>
+            item.id === product.id
+        );
+
+
+      // -----------------------------------------------
+      // Product already exists
+      // Increase quantity
+      // -----------------------------------------------
 
       if (existingProduct) {
-        return prevCart.map((item) =>
-          item.id === product.id
-            ? {
+
+        return previousItems.map(
+          (item) => {
+
+            if (
+              item.id === product.id
+            ) {
+
+              return {
                 ...item,
-                quantity: item.quantity + 1,
-              }
-            : item
+
+                quantity:
+                  (item.quantity || 1) + 1,
+              };
+
+            }
+
+            return item;
+
+          }
         );
       }
+
+
+      // -----------------------------------------------
+      // New product
+      // -----------------------------------------------
 
       return [
-        ...prevCart,
+
+        ...previousItems,
+
         {
           ...product,
+
           quantity: 1,
         },
+
       ];
+
     });
+
   };
 
-  // Cart count
-  const cartCount = cartItems.reduce(
-    (total, item) => total + item.quantity,
-    0
-  );
 
-  // Toggle favourite
-  const toggleFavourite = (product) => {
-    setFavourites((prevFavourites) => {
-      const alreadyFavourite = prevFavourites.some(
-        (item) => item.id === product.id
-      );
+  // =====================================================
+  // REMOVE FROM CART
+  // =====================================================
 
-      if (alreadyFavourite) {
-        return prevFavourites.filter(
-          (item) => item.id !== product.id
-        );
+  const removeFromCart = (productId) => {
+
+    setCartItems(
+      (previousItems) =>
+        previousItems.filter(
+          (item) =>
+            item.id !== productId
+        )
+    );
+
+  };
+
+
+  // =====================================================
+  // DECREASE CART QUANTITY
+  // =====================================================
+
+  const decreaseCartQuantity = (
+    productId
+  ) => {
+
+    setCartItems(
+      (previousItems) => {
+
+        return previousItems
+          .map((item) => {
+
+            if (
+              item.id === productId
+            ) {
+
+              return {
+                ...item,
+
+                quantity:
+                  (item.quantity || 1) - 1,
+              };
+
+            }
+
+            return item;
+
+          })
+
+          .filter(
+            (item) =>
+              item.quantity > 0
+          );
+
       }
+    );
 
-      return [...prevFavourites, product];
-    });
   };
 
-  // Check if product is favourite
-  const isFavourite = (productId) => {
-    return favourites.some((item) => item.id === productId);
+
+  // =====================================================
+  // CART COUNT
+  // =====================================================
+
+  /*
+    This counts TOTAL ITEMS.
+
+    Example:
+
+    Burger quantity = 2
+    Pizza quantity  = 1
+
+    cartCount = 3
+  */
+
+  const cartCount =
+    cartItems.reduce(
+      (
+        total,
+        item
+      ) =>
+        total +
+        (item.quantity || 1),
+
+      0
+    );
+
+
+  // =====================================================
+  // TOGGLE FAVOURITE
+  // =====================================================
+
+  const toggleFavourite = (
+    product
+  ) => {
+
+    setFavourites(
+      (previousFavourites) => {
+
+        const alreadyFavourite =
+          previousFavourites.some(
+            (item) =>
+              item.id === product.id
+          );
+
+
+        // ---------------------------------------------
+        // Remove favourite
+        // ---------------------------------------------
+
+        if (alreadyFavourite) {
+
+          return previousFavourites.filter(
+            (item) =>
+              item.id !== product.id
+          );
+
+        }
+
+
+        // ---------------------------------------------
+        // Add favourite
+        // ---------------------------------------------
+
+        return [
+          ...previousFavourites,
+          product,
+        ];
+
+      }
+    );
+
   };
 
-  // Favourite count
-  const favouriteCount = favourites.length;
+
+  // =====================================================
+  // CHECK FAVOURITE
+  // =====================================================
+
+  const isFavourite = (
+    productId
+  ) => {
+
+    return favourites.some(
+      (item) =>
+        item.id === productId
+    );
+
+  };
+
+
+  // =====================================================
+  // FAVOURITE COUNT
+  // =====================================================
+
+  const favouriteCount =
+    favourites.length;
+
+
+  // =====================================================
+  // CLEAR CART
+  // =====================================================
+
+  const clearCart = () => {
+
+    setCartItems([]);
+
+  };
+
+
+  // =====================================================
+  // CLEAR FAVOURITES
+  // =====================================================
+
+  const clearFavourites = () => {
+
+    setFavourites([]);
+
+  };
+
+
+  // =====================================================
+  // PROVIDER
+  // =====================================================
 
   return (
+
     <AppContext.Provider
       value={{
+
+        // ---------------------------------------------
+        // Cart
+        // ---------------------------------------------
+
         cartItems,
+
         setCartItems,
+
         addToCart,
+
+        removeFromCart,
+
+        decreaseCartQuantity,
+
+        clearCart,
+
         cartCount,
 
+
+        // ---------------------------------------------
+        // Favourites
+        // ---------------------------------------------
+
         favourites,
+
+        setFavourites,
+
         toggleFavourite,
+
         isFavourite,
+
+        clearFavourites,
+
         favouriteCount,
 
+
+        // ---------------------------------------------
+        // Login
+        // ---------------------------------------------
+
         showUserLogin,
+
         setShowUserLogin,
 
+
+        // ---------------------------------------------
+        // User
+        // ---------------------------------------------
+
         user,
+
         setUser,
+
       }}
     >
+
       {children}
+
     </AppContext.Provider>
+
   );
+
 };
+
+
+// =====================================================
+// USE APP CONTEXT
+// =====================================================
 
 export const useAppContext = () => {
-  return useContext(AppContext);
+
+  const context =
+    useContext(AppContext);
+
+
+  if (!context) {
+
+    throw new Error(
+      "useAppContext must be used inside AppProvider"
+    );
+
+  }
+
+
+  return context;
 };
 
-// Keep this because other components use useCart()
+
+// =====================================================
+// USE CART
+// =====================================================
+
 export const useCart = () => {
-  return useContext(AppContext);
+
+  const context =
+    useContext(AppContext);
+
+
+  if (!context) {
+
+    throw new Error(
+      "useCart must be used inside AppProvider"
+    );
+
+  }
+
+
+  return context;
 };

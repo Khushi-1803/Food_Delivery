@@ -201,12 +201,12 @@ export const categories = [
 
 export const bestSellers = [
   {
-    text: "Zinger Burgers",
+    text: "Chicken Burgers",
     price: 250,
     image: burger_bs
   },
   {
-    text: "Chiken Pizzas",
+    text: "Pepperoni pizzas",
     price: 250,
     image: pizza_bs
   },
@@ -221,7 +221,7 @@ export const bestSellers = [
     image: hotdog_bs
   },
   {
-    text: "Cold Drinks",
+    text: "Coca Cola",
     price: 250,
     image: coldDrink_bs
   }

@@ -3,10 +3,13 @@ import React from "react";
 import { useParams } from "react-router-dom";
 import { ProductDetails } from "../assets/assets";
 import { useCart } from "../context/AppContext";
+import {useNavigate} from "react-router-dom";
+
 
 const ProductData = () => {
   const { id } = useParams();
   const { addToCart } = useCart();
+  const navigate = useNavigate();
 
   const product = ProductDetails.find(
     (item) => item.id === Number(id)
@@ -143,8 +146,8 @@ const ProductData = () => {
 
             {/* Add To Cart */}
             <button
-  onClick={() => addToCart(product)}
-  className="
+              onClick={() => addToCart(product)}
+              className="
     flex-1
     bg-orange-500
     hover:bg-orange-600
@@ -156,13 +159,15 @@ const ProductData = () => {
     duration-300
     shadow-lg
   "
->
-  🛒 Add to Cart
-</button>
+            >
+              🛒 Add to Cart
+            </button>
 
 
             {/* Buy Now */}
             <button
+              type="button"
+              onClick={() => navigate("/cart")}
               className="
                 flex-1
                 bg-white

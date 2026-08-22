@@ -1,136 +1,393 @@
-import React from "react";
-import { useAppContext } from "../context/AppContext.jsx";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import React, {
+  useState,
+} from "react";
+
+import {
+  useNavigate,
+} from "react-router-dom";
+
+import {
+  useAppContext,
+} from "../context/AppContext.jsx";
+
+import {
+  useAuth,
+} from "../context/AuthContext.jsx";
+
 import toast from "react-hot-toast";
+
 
 const Login = () => {
 
+  // =====================================================
+  // APP CONTEXT
+  // =====================================================
+
   const {
     setShowUserLogin,
-    setUser
   } = useAppContext();
 
-  const navigate = useNavigate();
 
-  const [state, setState] = React.useState("login");
-  const [name, setName] = React.useState("");
-  const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
+  // =====================================================
+  // AUTH CONTEXT
+  // =====================================================
 
-  const onSubmitHandler = async (event) => {
+  const {
+    login,
+    register,
+  } = useAuth();
+
+
+  // =====================================================
+  // NAVIGATION
+  // =====================================================
+
+  const navigate =
+    useNavigate();
+
+
+  // =====================================================
+  // FORM MODE
+  // =====================================================
+
+  const [state, setState] =
+    useState("login");
+
+
+  // =====================================================
+  // FORM VALUES
+  // =====================================================
+
+  const [name, setName] =
+    useState("");
+
+  const [email, setEmail] =
+    useState("");
+
+  const [password, setPassword] =
+    useState("");
+
+
+  // =====================================================
+  // LOADING
+  // =====================================================
+
+  const [loading, setLoading] =
+    useState(false);
+
+
+  // =====================================================
+  // SUBMIT
+  // =====================================================
+
+  const onSubmitHandler = async (
+    event
+  ) => {
 
     event.preventDefault();
 
+
+    // -----------------------------------------------
+    // Prevent double click
+    // -----------------------------------------------
+
+    if (loading) {
+      return;
+    }
+
+
     try {
 
-      const { data } = await axios.post(
-        `/api/user/${state}`,
-        {
-          name,
-          email,
-          password
-        }
-      );
+      setLoading(true);
 
-      if (data.success) {
-  localStorage.setItem("token", data.token);
 
-  setUser(data.user);
+      // =============================================
+      // REGISTER
+      // =============================================
 
-  setShowUserLogin(false);
+      if (state === "register") {
 
-  navigate("/");
-} else {
+        const data =
+          await register(
+            name,
+            email,
+            password
+          );
 
-        toast.error(data.message);
+
+        console.log(
+          "REGISTER SUCCESS:",
+          data
+        );
+
+
+        toast.success(
+          "Account created successfully!"
+        );
 
       }
 
+
+      // =============================================
+      // LOGIN
+      // =============================================
+
+      else {
+
+        const data =
+          await login(
+            email,
+            password
+          );
+
+
+        console.log(
+          "LOGIN SUCCESS:",
+          data
+        );
+
+
+        toast.success(
+          "Login successful!"
+        );
+
+      }
+
+
+      // =============================================
+      // CLEAR FORM
+      // =============================================
+
+      setName("");
+
+      setEmail("");
+
+      setPassword("");
+
+
+      // =============================================
+      // CLOSE LOGIN POPUP
+      // =============================================
+
+      setShowUserLogin(false);
+
+
+      // =============================================
+      // GO TO HOME
+      // =============================================
+
+      navigate("/");
+
+
     } catch (error) {
 
-      toast.error(
-        error.response?.data?.message || error.message
+      console.error(
+        "Authentication error:",
+        error
       );
 
+
+      toast.error(
+        error.message ||
+        "Something went wrong"
+      );
+
+    } finally {
+
+      setLoading(false);
+
     }
+
   };
+
+
+  // =====================================================
+  // CLOSE LOGIN
+  // =====================================================
+
+  const handleClose = () => {
+
+    if (loading) {
+      return;
+    }
+
+    setShowUserLogin(false);
+
+  };
+
+
+  // =====================================================
+  // SWITCH LOGIN / REGISTER
+  // =====================================================
+
+  const switchMode = () => {
+
+    if (loading) {
+      return;
+    }
+
+
+    if (state === "login") {
+
+      setState("register");
+
+    } else {
+
+      setState("login");
+
+    }
+
+
+    // Clear fields
+
+    setName("");
+
+    setEmail("");
+
+    setPassword("");
+
+  };
+
+
+  // =====================================================
+  // UI
+  // =====================================================
 
   return (
 
     <div
-      onClick={() => setShowUserLogin(false)}
+      onClick={handleClose}
       className="
         fixed
         inset-0
-        z-50
+        z-[999]
         flex
         items-center
-        text-sm
-        text-gray-600
-        bg-black/50
+        justify-center
+        bg-black/70
+        backdrop-blur-sm
+        px-4
       "
     >
 
+      {/* ================================================= */}
+      {/* FORM */}
+      {/* ================================================= */}
+
       <form
         onSubmit={onSubmitHandler}
-        onClick={(e) => e.stopPropagation()}
+
+        onClick={(event) =>
+          event.stopPropagation()
+        }
+
         className="
           flex
           flex-col
           gap-4
-          m-auto
-          items-start
+          w-full
+          max-w-[352px]
           p-8
-          py-12
-          w-80
-          sm:w-[352px]
-          text-gray-500
-          rounded-lg
-          shadow-xl
+          py-10
+          bg-white
+          rounded-xl
+          shadow-2xl
           border
           border-gray-200
-          bg-white
         "
       >
 
-        <p className="text-2xl font-medium m-auto">
+        {/* =============================================== */}
+        {/* TITLE */}
+        {/* =============================================== */}
 
-          <span className="text-primary">
-            User
-          </span>
+        <div className="text-center mb-2">
 
-          {" "}
+          <h2
+            className="
+              text-2xl
+              font-bold
+              text-gray-800
+            "
+          >
 
-          {state === "login"
-            ? "Login"
-            : "Sign Up"}
+            <span className="text-orange-500">
+              ShopKart
+            </span>
 
-        </p>
+            <br />
 
-        {/* Name */}
+            <span>
+              {state === "login"
+                ? "Login"
+                : "Create Account"}
+            </span>
+
+          </h2>
+
+
+          <p
+            className="
+              text-gray-500
+              text-sm
+              mt-2
+            "
+          >
+
+            {state === "login"
+              ? "Welcome back!"
+              : "Create your ShopKart account"}
+
+          </p>
+
+        </div>
+
+
+        {/* =============================================== */}
+        {/* NAME */}
+        {/* =============================================== */}
+
         {state === "register" && (
 
           <div className="w-full">
 
-            <p>Name</p>
+            <label
+              className="
+                block
+                text-gray-700
+                mb-1
+              "
+            >
+              Name
+            </label>
+
 
             <input
-              onChange={(e) =>
-                setName(e.target.value)
-              }
+              type="text"
+
               value={name}
-              placeholder="type here"
+
+              onChange={(event) =>
+                setName(
+                  event.target.value
+                )
+              }
+
+              placeholder="Enter your name"
+
               className="
                 border
-                border-gray-200
-                rounded
+                border-gray-300
+                rounded-md
                 w-full
-                p-2
-                mt-1
-                outline-primary
+                p-2.5
+                text-gray-800
+                outline-none
+                focus:border-orange-500
+                focus:ring-1
+                focus:ring-orange-500
               "
-              type="text"
+
               required
             />
 
@@ -138,108 +395,235 @@ const Login = () => {
 
         )}
 
-        {/* Email */}
+
+        {/* =============================================== */}
+        {/* EMAIL */}
+        {/* =============================================== */}
+
         <div className="w-full">
 
-          <p>Email</p>
+          <label
+            className="
+              block
+              text-gray-700
+              mb-1
+            "
+          >
+            Email
+          </label>
+
 
           <input
-            onChange={(e) =>
-              setEmail(e.target.value)
-            }
-            value={email}
-            placeholder="type here"
-            className="
-              border
-              border-gray-200
-              rounded
-              w-full
-              p-2
-              mt-1
-              outline-primary
-            "
             type="email"
-            required
-          />
 
-        </div>
+            value={email}
 
-        {/* Password */}
-        <div className="w-full">
-
-          <p>Password</p>
-
-          <input
-            onChange={(e) =>
-              setPassword(e.target.value)
+            onChange={(event) =>
+              setEmail(
+                event.target.value
+              )
             }
-            value={password}
-            placeholder="type here"
+
+            placeholder="Enter your email"
+
             className="
               border
-              border-gray-200
-              rounded
+              border-gray-300
+              rounded-md
               w-full
-              p-2
-              mt-1
-              outline-primary
+              p-2.5
+              text-gray-800
+              outline-none
+              focus:border-orange-500
+              focus:ring-1
+              focus:ring-orange-500
             "
-            type="password"
+
             required
           />
 
         </div>
 
-        {/* Switch Login/Register */}
-        {state === "register" ? (
 
-          <p>
-            Already have account?
+        {/* =============================================== */}
+        {/* PASSWORD */}
+        {/* =============================================== */}
 
-            {" "}
+        <div className="w-full">
 
-            <span
-              onClick={() => setState("login")}
-              className="text-primary cursor-pointer"
-            >
-              click here
-            </span>
-          </p>
+          <label
+            className="
+              block
+              text-gray-700
+              mb-1
+            "
+          >
+            Password
+          </label>
 
-        ) : (
 
-          <p>
-            Create an account?
+          <input
+            type="password"
 
-            {" "}
+            value={password}
 
-            <span
-              onClick={() => setState("register")}
-              className="text-primary cursor-pointer"
-            >
-              click here
-            </span>
-          </p>
+            onChange={(event) =>
+              setPassword(
+                event.target.value
+              )
+            }
 
-        )}
+            placeholder="Enter your password"
 
-        {/* Submit */}
-        <button
-          type="submit"
+            className="
+              border
+              border-gray-300
+              rounded-md
+              w-full
+              p-2.5
+              text-gray-800
+              outline-none
+              focus:border-orange-500
+              focus:ring-1
+              focus:ring-orange-500
+            "
+
+            required
+          />
+
+        </div>
+
+
+        {/* =============================================== */}
+        {/* SWITCH LOGIN / REGISTER */}
+        {/* =============================================== */}
+
+        <div
           className="
-            bg-orange-400
-            hover:bg-orange-500
-            transition-all
-            text-black
-            w-full
-            py-2
-            rounded-md
-            cursor-pointer
+            text-sm
+            text-gray-600
+            text-center
           "
         >
-          {state === "register"
-            ? "Create Account"
-            : "Login"}
+
+          {state === "login" ? (
+
+            <>
+              Don't have an account?
+
+              {" "}
+
+              <button
+                type="button"
+
+                onClick={switchMode}
+
+                disabled={loading}
+
+                className="
+                  text-orange-500
+                  font-semibold
+                  hover:text-orange-600
+                  cursor-pointer
+                  disabled:cursor-not-allowed
+                "
+              >
+                Sign Up
+              </button>
+            </>
+
+          ) : (
+
+            <>
+              Already have an account?
+
+              {" "}
+
+              <button
+                type="button"
+
+                onClick={switchMode}
+
+                disabled={loading}
+
+                className="
+                  text-orange-500
+                  font-semibold
+                  hover:text-orange-600
+                  cursor-pointer
+                  disabled:cursor-not-allowed
+                "
+              >
+                Login
+              </button>
+            </>
+
+          )}
+
+        </div>
+
+
+        {/* =============================================== */}
+        {/* SUBMIT */}
+        {/* =============================================== */}
+
+        <button
+          type="submit"
+
+          disabled={loading}
+
+          className={`
+            w-full
+            py-2.5
+            rounded-md
+            font-semibold
+            text-black
+            transition-all
+
+            ${
+              loading
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-orange-500 hover:bg-orange-600 cursor-pointer"
+            }
+          `}
+        >
+
+          {loading
+
+            ? "Please wait..."
+
+            : state === "login"
+
+              ? "Login"
+
+              : "Create Account"
+
+          }
+
+        </button>
+
+
+        {/* =============================================== */}
+        {/* CANCEL */}
+        {/* =============================================== */}
+
+        <button
+          type="button"
+
+          onClick={handleClose}
+
+          disabled={loading}
+
+          className="
+            text-gray-500
+            hover:text-gray-800
+            text-sm
+            mt-1
+            cursor-pointer
+            disabled:cursor-not-allowed
+          "
+        >
+          Cancel
         </button>
 
       </form>
@@ -247,5 +631,6 @@ const Login = () => {
     </div>
   );
 };
+
 
 export default Login;

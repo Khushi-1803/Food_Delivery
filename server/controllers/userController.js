@@ -208,38 +208,51 @@ const getProfile = async (
 
 // ================= UPDATE ADDRESS =================
 
-const updateAddress = async (
-  req,
-  res
-) => {
+const updateAddress = async (req, res) => {
   try {
     const { address } = req.body;
 
-    if (!address) {
+    if (!address || typeof address !== "object") {
       return res.status(400).json({
         success: false,
-        message: "Address is required",
+        message: "Valid address is required",
       });
     }
 
-    const user =
-      await User.findByIdAndUpdate(
-        req.user.id,
-        {
+    const user = await User.findByIdAndUpdate(
+      req.user.id,
+      {
+        $set: {
           address,
         },
-        {
-          new: true,
-        }
-      ).select("-password");
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
+    ).select("-password");
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
 
     return res.json({
       success: true,
-      message:
-        "Address updated successfully",
-      user,
+      message: "Address updated successfully",
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        address: user.address,
+        profilePicture: user.profilePicture,
+      },
     });
   } catch (error) {
+    console.error("Update address error:", error);
+
     return res.status(500).json({
       success: false,
       message: error.message,

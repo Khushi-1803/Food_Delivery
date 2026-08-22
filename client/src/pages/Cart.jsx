@@ -2,6 +2,8 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../context/AppContext";
+import { useAuth } from "../context/AuthContext.jsx";
+
 
 const Cart = () => {
   const navigate = useNavigate();
@@ -10,6 +12,13 @@ const Cart = () => {
     cartItems,
     setCartItems,
   } = useCart();
+
+  const {
+    user,
+    token,
+    isAuthenticated,
+  } = useAuth();
+
 
   // Remove item from cart
   const removeItem = (id) => {
@@ -26,9 +35,9 @@ const Cart = () => {
       prevCart.map((item) =>
         item.id === id
           ? {
-              ...item,
-              quantity: newQuantity,
-            }
+            ...item,
+            quantity: newQuantity,
+          }
           : item
       )
     );
@@ -88,6 +97,201 @@ const Cart = () => {
       </div>
     );
   }
+
+  const handlePlaceOrder = async () => {
+
+  console.log("PLACE ORDER BUTTON CLICKED");
+
+  try {
+
+    // ==========================================
+    // CHECK LOGIN
+    // ==========================================
+
+    if (!token) {
+
+      alert(
+        "Please login before placing an order."
+      );
+
+      return;
+    }
+
+
+    // ==========================================
+    // CHECK ADDRESS
+    // ==========================================
+
+    if (!user?.address) {
+
+      alert(
+        "Please add a delivery address first."
+      );
+
+      navigate("/address");
+
+      return;
+    }
+
+
+    // ==========================================
+    // CHECK CART
+    // ==========================================
+
+    if (
+      !cartItems ||
+      cartItems.length === 0
+    ) {
+
+      alert("Your cart is empty.");
+
+      return;
+    }
+
+
+    // ==========================================
+    // PAYMENT
+    // ==========================================
+
+    const paymentMethod = "COD";
+
+
+    // ==========================================
+    // PREPARE ITEMS
+    // ==========================================
+
+    const items = cartItems.map(
+      (item) => ({
+
+        productId: item.id,
+
+        quantity:
+          Number(item.quantity),
+
+      })
+    );
+
+
+    console.log(
+      "ORDER ITEMS:",
+      items
+    );
+
+    console.log(
+      "USER:",
+      user
+    );
+
+    console.log(
+      "TOKEN EXISTS:",
+      !!token
+    );
+
+
+    // ==========================================
+    // SEND REQUEST
+    // ==========================================
+
+    const response = await fetch(
+      "http://localhost:5000/api/orders",
+      {
+
+        method: "POST",
+
+        headers: {
+
+          "Content-Type":
+            "application/json",
+
+          Authorization:
+            `Bearer ${token}`,
+
+        },
+
+        body: JSON.stringify({
+
+          items,
+
+          deliveryAddress:
+            JSON.stringify(
+              user.address
+            ),
+
+          paymentMethod,
+
+        }),
+
+      }
+    );
+
+
+    // ==========================================
+    // READ RESPONSE
+    // ==========================================
+
+    const data =
+      await response.json();
+
+
+    console.log(
+      "ORDER RESPONSE:",
+      data
+    );
+
+
+    // ==========================================
+    // ERROR
+    // ==========================================
+
+    if (!response.ok) {
+
+      throw new Error(
+        data.message ||
+        "Failed to place order"
+      );
+
+    }
+
+
+    // ==========================================
+    // SUCCESS
+    // ==========================================
+
+    alert(
+      "Order placed successfully!"
+    );
+
+
+    // ==========================================
+    // CLEAR CART
+    // ==========================================
+
+    setCartItems([]);
+
+
+    // ==========================================
+    // GO TO MY ORDERS
+    // ==========================================
+
+    navigate("/my-orders");
+
+  }
+
+  catch (error) {
+
+    console.error(
+      "PLACE ORDER ERROR:",
+      error
+    );
+
+    alert(
+      error.message ||
+      "Something went wrong while placing the order."
+    );
+
+  }
+
+};
 
   return (
     <div className="min-h-screen bg-black text-white px-6 md:px-12 lg:px-16 py-10">
@@ -288,13 +492,48 @@ const Cart = () => {
                 DELIVERY ADDRESS
               </h3>
 
-              <div className="flex justify-between items-center mt-3">
+              <div className="flex justify-between items-start mt-3 gap-4">
 
-                <p className="text-gray-400">
-                  No address found
-                </p>
+                <div>
+                  {user?.address ? (
+                    <div className="text-gray-400 text-sm">
 
-                <button className="text-orange-500 font-medium">
+                      <p className="text-white font-medium">
+                        {user.address.fullName}
+                      </p>
+
+                      <p>
+                        {user.address.houseNo},{" "}
+                        {user.address.street}
+                      </p>
+
+                      <p>
+                        {user.address.city},{" "}
+                        {user.address.state} -{" "}
+                        {user.address.pincode}
+                      </p>
+
+                      <p>
+                        Phone: {user.address.phone}
+                      </p>
+
+                    </div>
+                  ) : (
+                    <p className="text-gray-400">
+                      No address found
+                    </p>
+                  )}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    navigate("/address");
+                  }}
+                  className="text-orange-500 font-medium hover:text-orange-400 cursor-pointer"
+                >
                   Change
                 </button>
 
@@ -390,18 +629,17 @@ const Cart = () => {
 
               {/* Place Order */}
               <button
-                onClick={() =>
-                  alert("Order placed successfully!")
-                }
+                type="button"
+                onClick={handlePlaceOrder}
                 className="
-                  w-full
-                  bg-orange-500
-                  hover:bg-orange-600
-                  text-white
-                  py-4
-                  font-semibold
-                  transition
-                  rounded-sm
+                w-full
+                bg-orange-500
+                hover:bg-orange-600
+                text-white
+                py-4
+                font-semibold
+                transition
+                rounded-sm
                 "
               >
                 Place Order
