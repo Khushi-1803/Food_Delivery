@@ -14,12 +14,18 @@ const app = express();
 
 connectDB();
 
+const clientUrl = process.env.CLIENT_URL || "http://localhost:5173";
+const allowedOrigins = clientUrl.includes(",")
+  ? clientUrl.split(",").map((origin) => origin.trim())
+  : clientUrl;
+
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: allowedOrigins,
     credentials: true,
   })
 );
+
 
 app.use(express.json());
 

@@ -3,6 +3,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../context/AppContext";
 import { useAuth } from "../context/AuthContext.jsx";
+import { API_URL } from "../config/api.js";
 
 
 const Cart = () => {
@@ -193,7 +194,7 @@ const Cart = () => {
     // ==========================================
 
     const response = await fetch(
-      "http://localhost:5000/api/orders",
+      `${API_URL}/api/orders`,
       {
 
         method: "POST",

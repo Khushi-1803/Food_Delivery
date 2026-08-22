@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
+import { API_URL } from "../config/api.js";
 
 const MyOrders = () => {
   const navigate = useNavigate();
@@ -93,7 +94,7 @@ const MyOrders = () => {
         setLoading(true);
 
         const response = await fetch(
-          "http://localhost:5000/api/orders/my-orders",
+          `${API_URL}/api/orders/my-orders`,
           {
             method: "GET",
             headers: {
