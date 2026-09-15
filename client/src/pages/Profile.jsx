@@ -136,15 +136,7 @@ const Profile = () => {
           </h2>
 
 
-          {/* <p className="text-gray-400">
-            Address
-          </p>
-
-
-          <p className="mt-1">
-            {user.address ||
-              "No address added"}
-          </p> */}
+         
           <div className="mt-10 border border-gray-700 p-6 rounded-xl">
 
   <div className="flex items-center justify-between">

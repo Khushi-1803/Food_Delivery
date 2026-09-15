@@ -180,30 +180,7 @@ console.log(
 
    
 
-      // -----------------------------------------------
-      // FIND PRODUCT
-      // -----------------------------------------------
-
-      // const product =
-      //   await Product.findOne({
-
-      //     productId: productId,
-
-      //     isAvailable: true,
-
-      //   }).session(session);
-
-
-      // const product = await Product.findOne({
-      //   productId: productId,
-      // }).session(session);
-
-      // console.log("LOOKING FOR PRODUCT:", productId);
-      // console.log("FOUND PRODUCT:", product);
-
-      // -----------------------------------------------
-// FIND PRODUCT
-// -----------------------------------------------
+     
 
 const product = await Product.findOne({
   productId: productId,

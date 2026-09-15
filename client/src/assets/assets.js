@@ -84,6 +84,7 @@ import pd from "./pd.jpg";
 import coldDrink_bs from "./coldDrink_bs.jpg";
 
 import banner2 from "./banner2.mp4";
+import banner_food from "./banner_food.jpg";
 
 
 const assets = {
@@ -112,6 +113,7 @@ const assets = {
   loop7,
   loop8,
   banner2,
+  banner_food,
   burger1_fl,
   burger3_fl,
   burger4_fl,

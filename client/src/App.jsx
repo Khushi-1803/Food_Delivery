@@ -2,13 +2,9 @@ import "./App.css";
 
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-
 import Login from "./pages/Login";
 import Cart from "./pages/Cart";
-
-import {
-  useAppContext,
-} from "./context/AppContext";
+import { useAppContext } from "./context/AppContext";
 
 import Home from "./pages/Home";
 import Aboutus from "./pages/Aboutus";
@@ -17,119 +13,33 @@ import ProductData from "./pages/ProductDetails";
 import FoodListing from "./pages/FoodListing";
 import Favourite from "./pages/Favourite";
 import Profile from "./pages/Profile";
-import Address from "./pages/Address";
-import MyOrders from "./pages/MyOrders.jsx";
 
-import {
-  Route,
-  Routes,
-} from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 
-
-function AppContent() {
-
-  const {
-    showUserLogin,
-  } = useAppContext();
-
+function App() {
+  const { showUserLogin } = useAppContext();
 
   return (
-
-    <div
-      className="
-        min-h-screen
-        bg-black
-        text-white
-      "
-    >
-
+    <div className="min-h-screen bg-black text-white">
       <Navbar />
 
-
       <Routes>
-
-        <Route
-          path="/"
-          element={<Home />}
-        />
-
-        <Route
-          path="/login"
-          element={<Login />}
-        />
-        <Route
-          path="/address"
-          element={<Address />}
-        />
-        <Route
-        path="/my-orders"
-        element={<MyOrders />}
-        />
-
-        <Route
-          path="/dishes"
-          element={<FoodListing />}
-        />
-
-        <Route
-          path="/dishes/:category"
-          element={<FoodListing />}
-        />
-
-        <Route
-          path="/dishes/:category/:id"
-          element={<ProductData />}
-        />
-
-        <Route
-          path="/aboutus"
-          element={<Aboutus />}
-        />
-
-        <Route
-          path="/contact"
-          element={<Contactus />}
-        />
-
-        <Route
-          path="/cart"
-          element={<Cart />}
-        />
-
-        <Route
-          path="/favourites"
-          element={<Favourite />}
-        />
-
-        <Route
-          path="/profile"
-          element={<Profile />}
-        />
-
+        <Route path="/" element={<Home />} />
+        <Route path="/dishes" element={<FoodListing />} />
+        <Route path="/dishes/:category" element={<FoodListing />} />
+        <Route path="/dishes/:category/:id" element={<ProductData />} />
+        <Route path="/aboutus" element={<Aboutus />} />
+        <Route path="/contact" element={<Contactus />} />
+        <Route path="/cart" element={<Cart />} />
+        <Route path="/favourites" element={<Favourite />} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
-
 
       <Footer />
 
-
-      {showUserLogin && (
-        <Login />
-      )}
-
+      {showUserLogin && <Login />}
     </div>
-
   );
-
 }
-
-
-function App() {
-
-  return (
-    <AppContent />
-  );
-
-}
-
 
 export default App;

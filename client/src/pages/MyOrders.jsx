@@ -516,3 +516,15 @@ const MyOrders = () => {
 };
 
 export default MyOrders;
+
+// Request
+//    ↓
+// Read token
+//    ↓
+// Verify token
+//    ↓
+// Find user ID
+//    ↓
+// Find orders belonging to that user
+//    ↓
+// Return those orders
